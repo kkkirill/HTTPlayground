@@ -19,6 +19,7 @@ class SimpleRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(body_content.encode('utf-8'))
 
     def do_POST(self):
+        print(self.headers)
         body_content = f'{urls.get(self.path, not_found)(self)}'
         self.wfile.write(body_content.encode('utf-8'))
 
@@ -34,7 +35,7 @@ def run(server_class=HTTPServer, handler_class=BaseHTTPRequestHandler, url=URL, 
 
 
 if __name__ == '__main__':
-    if len(argv) == 2:
-        run(url=argv[1], port=int(argv[2]))
+    if len(argv) == 3:
+        run(handler_class=SimpleRequestHandler, url=argv[1], port=int(argv[2]))
     else:
         run(handler_class=SimpleRequestHandler)

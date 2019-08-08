@@ -24,8 +24,8 @@ def get_form(request):
     request.send_response(202)
     request.send_header('Content-type', 'text/html')
     request.end_headers()
-    form_text = {'form_link': ('/charge', '/charge'),
-                 'auth_link': ('auth/login', 'auth/logout'),
+    form_text = {'form_link': ('http://localhost:8001/charge', 'http://localhost:8001/charge'),
+                 'auth_link': ('http://localhost:8001/auth/login', 'http://localhost:8001/auth/logout'),
                  'auth_text': ('Login', 'Logout')}
     is_authenticated = CookieHandler.is_cookie(request, {'auth': 'True'})
     t = Template(FileReader.read('form.html'))
