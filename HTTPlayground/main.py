@@ -8,6 +8,7 @@ from HTTPlayground.base import FileReader, send_headers
 class SimpleRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
+        self.path = self.path[::-1].replace('?', '', 1)[::-1]
         if self.path == '/favicon.ico':
             return
         elif self.path.endswith(('.css', '.js')):
