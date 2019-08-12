@@ -22,9 +22,6 @@ class CookieHandler:
 
     @classmethod
     def generate_cookie(cls, request, cookie_pair: dict):
-        """Should use before end_headers!"""
-        if cls.is_cookie(request, cookie_pair):
-            return
         cookie = SimpleCookie(request.headers.get('Cookie'))
         k, v = tuple(cookie_pair.items())[0]
         cookie[f"{k}"] = v
@@ -34,7 +31,6 @@ class CookieHandler:
 
 
 class FileReader:
-
     @staticmethod
     def read(filename: str, mode: str = 't', encoding: str = 'utf-8'):
         """binary mode - b, text mode - t"""
