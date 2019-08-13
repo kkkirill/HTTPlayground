@@ -3,7 +3,7 @@ from sys import argv
 
 SERVERS_INFO = {
     'URL0': '127.0.0.1', 'PORT0': 8000,
-    'URL1': '127.255.255.254', 'PORT1': 8080
+    'URL1': '0.0.0.0', 'PORT1': 8080  # '127.255.255.254'
 }
 
 IS_MAIN_SERVER = not int(argv[1])

@@ -3,8 +3,8 @@ from HTTPlayground.settings import IS_MAIN_SERVER
 
 if IS_MAIN_SERVER:
     urls = {
-        '/authh/login': login,
-        '/authh/logout': logout,
+        '/auth/login': login,
+        '/auth/logout': logout,
         '/charge': process_form
     }
 else:

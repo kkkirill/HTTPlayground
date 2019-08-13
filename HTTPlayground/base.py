@@ -1,11 +1,13 @@
 from http.cookies import SimpleCookie
 from pathlib import Path
-from HTTPlayground.settings import BASE_DIR, TEMPLATE_DIR, STATIC_URL
+from HTTPlayground.settings import BASE_DIR, TEMPLATE_DIR, STATIC_URL, ACCESSORY_URL_PREFIX
 
 
 def send_headers(request, response_code: int = 200, content_type: str = 'text/plain', **kwargs):
     request.send_response(response_code)
     request.send_header('Content-type', content_type)
+    request.send_header('Access-Control-Allow-Credentials', 'true')
+    request.send_header('Access-Control-Allow-Origin', f'{ACCESSORY_URL_PREFIX}')
     for k, v in kwargs.items():
         request.send_header(k, v)
     request.end_headers()

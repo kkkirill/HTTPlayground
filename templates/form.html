@@ -3,17 +3,22 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="../static/form.css"/>
     <title>Title</title>
+    <script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
 </head>
 <body>
-<form class="charge-form" action="{{form_link}}" method="post">
+<form class="charge-form" name="charge_form" action="{{form_link}}" method="post">
         <div class="form-header">
             <p class="title">Charge</p>
             <a class="auth-link" href="{{auth_link}}">{{auth_text}}</a>
         </div>
         <label>
-            <input class="sum-input" type="text" name="sum_value" placeholder="Sum">
+            <input class="sum-input" type="text" name="sum_value" placeholder="Sum" value="100">
         </label>
         <button class="submit-button" type="submit">Send</button>
     </form>
+    <script src="../static/autosend.js"></script>
 </body>
 </html>

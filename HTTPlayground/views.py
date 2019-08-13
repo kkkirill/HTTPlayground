@@ -23,7 +23,7 @@ def logout(request):
 def get_form(request):
     send_headers(request, content_type='text/html')
     form_text = {'form_link': (f'{ACCESSORY_URL_PREFIX}/charge', f'{ACCESSORY_URL_PREFIX}/charge'),
-                 'auth_link': (f'{ACCESSORY_URL_PREFIX}/authh/login', f'{ACCESSORY_URL_PREFIX}/authh/logout'),
+                 'auth_link': (f'{ACCESSORY_URL_PREFIX}/auth/login', f'{ACCESSORY_URL_PREFIX}/auth/logout'),
                  'auth_text': ('Login', 'Logout')}
     is_authenticated = CookieHandler.is_cookie(request, {'auth': 'True'})
     t = Template(FileReader.read('form.html'))
@@ -40,6 +40,7 @@ def process_form(request):
         headers=request.headers,
         environ={'REQUEST_METHOD': 'POST'}
     )
+    print("Processed ", form.getvalue("sum_value"))
     t = Template(FileReader.read('charged.html'))
     rendered_html = t.render(link=f'{ACCESSORY_URL_PREFIX}/form', text=f'OK. {form.getvalue("sum_value")}$ charged!')
     return rendered_html
