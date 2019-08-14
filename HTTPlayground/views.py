@@ -32,6 +32,7 @@ def get_form(request):
 
 
 def process_form(request):
+    print(request.headers)
     send_headers(request, content_type='text/html')
     if not CookieHandler.is_cookie(request, {'auth': 'True'}):
         return

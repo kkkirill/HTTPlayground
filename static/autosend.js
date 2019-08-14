@@ -14,17 +14,16 @@ function autoSend() {
         crossOrigin: true,
         url: url,
         type: method,
+        contentType: false,
         processData: false,
         data: formData,
-        dataType: "html",
         xhrFields: {
           withCredentials: true
         },
         success: function (data) {
             let response_content = $('<output>').append($.parseHTML(data));
             let msg = response_content.children('form').children('p').text();
-            let sended_sum = $('body form label .sum-input').val();
-            alert(msg.toString().replace("None", sended_sum.toString()));
+            alert(msg);
             return msg;
         },
         error: function (data) {
