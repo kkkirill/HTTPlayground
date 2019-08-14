@@ -22,9 +22,13 @@ class CookieHandler:
         cookie = cookies.get(f'{k}')
         return getattr(cookie, 'value', None) == v
 
+    @staticmethod
+    def get_cookie(request):
+        return SimpleCookie(request.headers.get('Cookie'))
+
     @classmethod
     def generate_cookie(cls, request, cookie_pair: dict):
-        cookie = SimpleCookie(request.headers.get('Cookie'))
+        cookie = cls.get_cookie(request)
         k, v = tuple(cookie_pair.items())[0]
         cookie[f"{k}"] = v
         cookie[f"{k}"]['path'] = '/'
@@ -42,3 +46,19 @@ class FileReader:
             return path.read_text(encoding) if mode == 't' else path.read_bytes()
         else:
             raise FileNotFoundError(f'Cannot find file:\n{path}')
+
+
+class TokensDB:
+    token_base = set()
+
+    @classmethod
+    def is_token_valid(cls, token):
+        return token in cls.token_base
+
+    @classmethod
+    def add_token(cls, token):
+        cls.token_base.add(token)
+
+    @classmethod
+    def remove_token(cls, token):
+        cls.token_base.remove(token)

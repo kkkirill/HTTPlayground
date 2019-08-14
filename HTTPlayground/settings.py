@@ -6,6 +6,8 @@ SERVERS_INFO = {
     'URL1': '0.0.0.0', 'PORT1': 8080  # '127.255.255.254'
 }
 
+SALT = "удав"
+
 IS_MAIN_SERVER = not int(argv[1])
 
 PORT = SERVERS_INFO.get(f'PORT{argv[1]}', SERVERS_INFO['PORT0'])
