@@ -2,26 +2,17 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from HTTPlayground.views import not_found
 from HTTPlayground.urls import urls
 from HTTPlayground.settings import URL, PORT
-from HTTPlayground.base import FileReader, send_headers
+from HTTPlayground.base import process_static
 
 
 class SimpleRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
-        if self.path == '/favicon.ico':
-            return
-        elif self.path.endswith(('.css', '.js')):
-            filename = self.path.rsplit('/', 1)[-1]
-            extension = filename.rsplit('.', 1)[-1]
-            content_type_part = "application" if extension == "js" else "text"
-            send_headers(self, content_type=f'{content_type_part}/{extension}')
-            self.wfile.write(FileReader.read(filename, mode='b'))
-        else:
-            body_content = f'{urls.get(self.path, not_found)(self)}'
-            self.wfile.write(body_content.encode('utf-8'))
+        body_content = f'{urls.get(self.path, process_static)(self) or not_found(self)}'
+        self.wfile.write(body_content.encode('utf-8'))
 
     def do_POST(self):
-        body_content = f'{urls.get(self.path, not_found)(self)}'
+        body_content = f'{urls.get(self.path, process_static)(self) or not_found(self)}'
         self.wfile.write(body_content.encode('utf-8'))
 
 
