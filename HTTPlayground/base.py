@@ -1,6 +1,19 @@
+from functools import wraps
 from http.cookies import SimpleCookie
 from pathlib import Path
-from HTTPlayground.settings import BASE_DIR, TEMPLATE_DIR, STATIC_URL, ACCESSORY_URL_PREFIX
+from mimetypes import guess_type
+from HTTPlayground.settings import BASE_DIR, STATIC_URL, ACCESSORY_URL_PREFIX
+
+
+def require_http_methods(request_method_list, error_handler):
+    def decorator(func):
+        @wraps(func)
+        def inner(request, *args, **kwargs):
+            if request.command not in request_method_list:
+                return error_handler(request, *args, **kwargs)
+            return func(request, *args, **kwargs)
+        return inner
+    return decorator
 
 
 def send_headers(request, response_code: int = 200, content_type: str = 'text/plain', **kwargs):
@@ -13,39 +26,39 @@ def send_headers(request, response_code: int = 200, content_type: str = 'text/pl
     request.end_headers()
 
 
+def process_static(request):
+    filename = request.path.rsplit('/', 1)[-1]
+    path = Path(BASE_DIR, STATIC_URL, filename)
+    if path.exists():
+        send_headers(request, content_type=guess_type(request.path)[0])
+        return path.read_text('utf-8')
+
+
 class CookieHandler:
     @staticmethod
-    def is_cookie(request, cookie_pair: dict):
+    def has_cookie(request, *, name, value):
         raw_cookies = request.headers.get('Cookie')
         cookies = SimpleCookie(raw_cookies)
-        k, v = tuple(cookie_pair.items())[0]
-        cookie = cookies.get(f'{k}')
-        return getattr(cookie, 'value', None) == v
+        cookie = cookies.get(name)
+        return getattr(cookie, 'value', None) == value
 
     @staticmethod
-    def get_cookie(request):
-        return SimpleCookie(request.headers.get('Cookie'))
-
-    @classmethod
-    def generate_cookie(cls, request, cookie_pair: dict):
-        cookie = cls.get_cookie(request)
-        k, v = tuple(cookie_pair.items())[0]
-        cookie[f"{k}"] = v
-        cookie[f"{k}"]['path'] = '/'
-        cookie[f"{k}"]['httponly'] = True
+    def generate_cookie_for_remove(request, *, name):
+        cookie = SimpleCookie(request.headers.get('Cookie'))
+        cookie[name]['path'] = '/'
+        cookie[name]['expires'] = 'Thu, 01 Jan 1970 00:00:00 GMT'
+        cookie[name]['httponly'] = True
         return cookie.output(header='', sep='')
 
-
-class FileReader:
-    @staticmethod
-    def read(filename: str, mode: str = 't', encoding: str = 'utf-8'):
-        """binary mode - b, text mode - t"""
-        is_template = filename.endswith('.html')
-        path = Path(BASE_DIR, (TEMPLATE_DIR if is_template else STATIC_URL), filename)
-        if path.exists():
-            return path.read_text(encoding) if mode == 't' else path.read_bytes()
-        else:
-            raise FileNotFoundError(f'Cannot find file:\n{path}')
+    @classmethod
+    def generate_cookie(cls, request, *, name, value):
+        if cls.has_cookie(request, name=name, value=value):
+            return
+        cookie = SimpleCookie(request.headers.get('Cookie'))
+        cookie[name] = value
+        cookie[name]['path'] = '/'
+        cookie[name]['httponly'] = True
+        return cookie.output(header='', sep='')
 
 
 class TokensDB:

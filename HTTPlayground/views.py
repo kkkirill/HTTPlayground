@@ -1,43 +1,56 @@
 from cgi import FieldStorage
-from jinja2 import Template
-from HTTPlayground.base import FileReader, CookieHandler, TokensDB, send_headers
-from HTTPlayground.settings import ACCESSORY_URL_PREFIX, SALT
+from HTTPlayground.base import CookieHandler, send_headers, require_http_methods, TokensDB
+from HTTPlayground.settings import ACCESSORY_URL_PREFIX, TEMPLATE_ENV, SALT
 
 
+def not_found(request):
+    send_headers(request, response_code=404, content_type='text/html')
+    file = TEMPLATE_ENV.get_template('base_response_form.html')
+    rendered_html = file.render(title='Not found', link=f'{ACCESSORY_URL_PREFIX}/form',
+                                text='404 error. Page not found!')
+    return rendered_html
+
+
+@require_http_methods(['GET'], not_found)
 def login(request):
-    cookie_header = {'Set-Cookie': CookieHandler.generate_cookie(request, {'auth': 'True'})}
+    cookie_header = {'Set-Cookie': CookieHandler.generate_cookie(request, name='auth', value='True')}
     send_headers(request, content_type='text/html', **cookie_header)
-    t = Template(FileReader.read('login.html'))
-    rendered_html = t.render(link=f'{ACCESSORY_URL_PREFIX}/form')
+    file = TEMPLATE_ENV.get_template('base_response_form.html')
+    rendered_html = file.render(title='Login', link=f'{ACCESSORY_URL_PREFIX}/form', text='Successful login.')
     return rendered_html
 
 
+@require_http_methods(['GET'], not_found)
 def logout(request):
-    cookie_header = {'Set-Cookie': CookieHandler.generate_cookie(request, {'auth': 'False'})}
+    cookie_header = {'Set-Cookie': CookieHandler.generate_cookie_for_remove(request, name='auth')}
     send_headers(request, content_type='text/html', **cookie_header)
-    t = Template(FileReader.read('logout.html'))
-    rendered_html = t.render(link=f'{ACCESSORY_URL_PREFIX}/form')
+    file = TEMPLATE_ENV.get_template('base_response_form.html')
+    rendered_html = file.render(title='Logout', link=f'{ACCESSORY_URL_PREFIX}/form', text='Successful logout.')
     return rendered_html
 
 
+@require_http_methods(['GET'], not_found)
 def get_form(request):
     send_headers(request, content_type='text/html')
-    secret_token = hash(f'{hash(CookieHandler.generate_cookie(request, {"auth": "True"}))}{hash(SALT)}')
+    secret_token = hash(f'{hash(CookieHandler.generate_cookie(request, name="auth", value="True"))}{hash(SALT)}')
     TokensDB.add_token(secret_token)
-    form_text = {'form_link': (f'{ACCESSORY_URL_PREFIX}/charge', f'{ACCESSORY_URL_PREFIX}/charge'),
-                 'auth_link': (f'{ACCESSORY_URL_PREFIX}/auth/login', f'{ACCESSORY_URL_PREFIX}/auth/logout'),
+    form_text = {'title': ('form', 'form'),
+                 'form_link': (f'{ACCESSORY_URL_PREFIX}/charge', f'{ACCESSORY_URL_PREFIX}/charge'),
+                 'auth_link': (f'{ACCESSORY_URL_PREFIX}/authh/login', f'{ACCESSORY_URL_PREFIX}/authh/logout'),
                  'auth_text': ('Login', 'Logout'),
                  'secret_token': (secret_token, secret_token)}
-    is_authenticated = CookieHandler.is_cookie(request, {'auth': 'True'})
-    t = Template(FileReader.read('form.html'))
-    rendered_html = t.render(**{k: v[is_authenticated] for k, v in form_text.items()})
+    is_authenticated = CookieHandler.has_cookie(request, name='auth', value='True')
+    file = TEMPLATE_ENV.get_template('form.html')
+    rendered_html = file.render(**{k: v[is_authenticated] for k, v in form_text.items()})
     return rendered_html
 
 
+@require_http_methods(['POST'], not_found)
 def process_form(request):
     send_headers(request, content_type='text/html')
-    if not CookieHandler.is_cookie(request, {'auth': 'True'}):
-        return
+    file = TEMPLATE_ENV.get_template('base_response_form.html')
+    if not CookieHandler.has_cookie(request, name='auth', value='True'):
+        return file.render(title='Error', link=f'{ACCESSORY_URL_PREFIX}/form', text='Not authorized!')
     form = FieldStorage(
         fp=request.rfile,
         headers=request.headers,
@@ -48,11 +61,5 @@ def process_form(request):
         form_text = form_text.format(msg='OK', sum_msg=form.getvalue("sum_value"))
     else:
         form_text = form_text.format(msg='ERROR', sum_msg='Nothing')
-    t = Template(FileReader.read('charged.html'))
-    rendered_html = t.render(link=f'{ACCESSORY_URL_PREFIX}/form', text=form_text)
+    rendered_html = file.render(title='Charged', link=f'{ACCESSORY_URL_PREFIX}/form', text=form_text)
     return rendered_html
-
-
-def not_found(request):
-    send_headers(request, content_type='text/html')
-    return Template(FileReader.read('not_found.html')).render(link=f'{ACCESSORY_URL_PREFIX}/form')
