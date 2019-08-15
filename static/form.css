@@ -1,0 +1,38 @@
+body {
+    height: 100%;
+    justify-content: center;
+    display: flex;
+}
+input {
+    display: block;
+}
+.charge-form {
+    margin-top: 18%;
+    padding: 10px;
+    border-radius: 2px;
+    justify-content: center;
+    align-content: center;
+    background-color: #adf0ff;
+}
+.title, .submit-button, .auth-link, .sum-input {
+    margin: 10px 0 10px 0;
+    font-size: 1.2rem;
+    border-radius: 6px;
+}
+.title, .auth-link{
+    display: inline-block;
+}
+.form-header {
+    display: flex;
+    justify-content: space-between;
+}
+.submit-button {
+    border: 1px solid #ffffff;
+    outline: none;
+}
+.submit-button:hover {
+  border-color: #23a4fa;
+}
+.sum-input:hover {
+  border-color: #23a4fa;
+}

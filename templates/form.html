@@ -1,0 +1,21 @@
+{% extends "base_response.html" %}
+
+{% block staticfiles %}
+    {{ super() }}
+    <link rel="stylesheet" type="text/css" href="../static/form.css"/>
+{% endblock %}
+
+{% block content %}
+
+    <form class="charge-form" action="{{form_link}}" method="post">
+        <div class="form-header">
+            <p class="title">Charge</p>
+            <a class="auth-link" href="{{auth_link}}">{{auth_text}}</a>
+        </div>
+        <label>
+            <input class="sum-input" type="text" name="sum_value" placeholder="Sum">
+        </label>
+        <button class="submit-button" type="submit">Send</button>
+    </form>
+
+{% endblock %}
