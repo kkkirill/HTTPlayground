@@ -30,8 +30,6 @@ def process_static(request):
     if path.exists():
         send_headers(request, content_type=guess_type(request.path)[0])
         return path.read_text('utf-8')
-    else:
-        request.send_error(404, message=f'File {request.path} not found')
 
 
 class CookieHandler:
@@ -45,7 +43,9 @@ class CookieHandler:
     @staticmethod
     def generate_cookie_for_remove(request, *, name):
         cookie = SimpleCookie(request.headers.get('Cookie'))
+        cookie[name]['path'] = '/'
         cookie[name]['expires'] = 'Thu, 01 Jan 1970 00:00:00 GMT'
+        cookie[name]['httponly'] = True
         return cookie.output(header='', sep='')
 
     @classmethod

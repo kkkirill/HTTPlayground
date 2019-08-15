@@ -13,6 +13,6 @@
 ##### Usage:
 * Run server:
     
-      python path_to_main.py <URL> <PORT>
+      python run_server.py <URL> <PORT>
     
 * Check "URL:PORT/form" specified in _HTTPlayground/settings.py_ or passed by you as arguments
