@@ -7,10 +7,10 @@ input {
     display: block;
 }
 .charge-form {
+    margin-top: 18%;
     padding: 10px;
     border-radius: 2px;
     justify-content: center;
-    margin: auto;
     align-content: center;
     background-color: #adf0ff;
 }
