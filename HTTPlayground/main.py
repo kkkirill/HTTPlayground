@@ -24,7 +24,3 @@ def run(server_class=HTTPServer, handler_class=BaseHTTPRequestHandler, url=URL, 
         print('Stopped')
     finally:
         handler.socket.close()
-
-
-if __name__ == '__main__':
-    run(handler_class=SimpleRequestHandler)

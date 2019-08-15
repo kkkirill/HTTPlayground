@@ -13,8 +13,8 @@
 ##### Usage:
 * Run 2 servers:
 
-      python path_to_main.py 0
-      python path_to_main.py 1
+      python run_server.py 0
+      python run_server.py 1
 
   0 - main server (GET form)<br>
   1 - accessory server (authorization, main processing)
