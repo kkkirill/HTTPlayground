@@ -11,10 +11,12 @@
     pip install -r requirements.txt
     
 ##### Usage:
-Run 2 servers:
-    
-    python path_to_main.py 0
-    python path_to_main.py 1
-    
-0 - main server (GET form)<br>
-1 - accessory server (authorization, main processing)
+* Run 2 servers:
+
+      python run_server.py 0
+      python run_server.py 1
+
+  0 - main server (GET form)<br>
+  1 - accessory server (authorization, main processing)
+
+* Check "URL1:PORT1/form" specified in _HTTPlayground/settings.py_
