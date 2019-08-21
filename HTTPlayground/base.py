@@ -52,8 +52,6 @@ class CookieHandler:
 
     @classmethod
     def generate_cookie(cls, request, *, name, value):
-        if cls.has_cookie(request, name=name, value=value):
-            return
         cookie = SimpleCookie(request.headers.get('Cookie'))
         cookie[name] = value
         cookie[name]['path'] = '/'

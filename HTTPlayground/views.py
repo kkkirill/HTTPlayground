@@ -32,13 +32,14 @@ def logout(request):
 @require_http_methods(['GET'], not_found)
 def get_form(request):
     send_headers(request, content_type='text/html')
-    form_text = {'title': ('form', 'form'),
-                 'form_link': (f'{ACCESSORY_URL_PREFIX}/charge', f'{ACCESSORY_URL_PREFIX}/charge'),
-                 'auth_link': (f'{ACCESSORY_URL_PREFIX}/authh/login', f'{ACCESSORY_URL_PREFIX}/authh/logout'),
-                 'auth_text': ('Login', 'Logout')}
-    is_authenticated = CookieHandler.has_cookie(request, name='auth', value='True')
+    form_text = {'title': 'form',
+                 'form_link': f'{ACCESSORY_URL_PREFIX}/charge',
+                 'auth_link': f'{ACCESSORY_URL_PREFIX}/authh/login',
+                 'deauth_link': f'{ACCESSORY_URL_PREFIX}/authh/logout',
+                 'auth_text': 'Login',
+                 'deauth_text': 'Logout'}
     file = TEMPLATE_ENV.get_template('form.html')
-    rendered_html = file.render(**{k: v[is_authenticated] for k, v in form_text.items()})
+    rendered_html = file.render(**form_text)
     return rendered_html
 
 
