@@ -43,13 +43,14 @@ class CookieHandler:
     @staticmethod
     def generate_cookie_for_remove(request, *, name):
         cookie = SimpleCookie(request.headers.get('Cookie'))
+        cookie[name] = 'deleted'
+        cookie[name]['path'] = '/'
         cookie[name]['expires'] = 'Thu, 01 Jan 1970 00:00:00 GMT'
+        cookie[name]['httponly'] = True
         return cookie.output(header='', sep='')
 
     @classmethod
     def generate_cookie(cls, request, *, name, value):
-        if cls.has_cookie(request, name=name, value=value):
-            return
         cookie = SimpleCookie(request.headers.get('Cookie'))
         cookie[name] = value
         cookie[name]['path'] = '/'
