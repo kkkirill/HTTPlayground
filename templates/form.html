@@ -13,7 +13,10 @@
     <form class="charge-form" name="charge_form" action="{{form_link}}" method="post">
         <div class="form-header">
             <p class="title">Charge</p>
-            <a class="auth-link" href="{{auth_link}}">{{auth_text}}</a>
+            <div>
+                <a class="auth-link" href="{{auth_link}}">{{auth_text}}</a>
+                <a class="deauth-link" href="{{deauth_link}}">{{deauth_text}}</a>
+            </div>
         </div>
         <label>
             <input class="sum-input" type="text" name="sum_value" placeholder="Sum" value="100">
