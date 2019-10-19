@@ -7,6 +7,8 @@ SERVERS_INFO = {
     'URL1': '0.0.0.0', 'PORT1': 8080
 }
 
+SALT = "удав"
+
 IS_MAIN_SERVER = argv[1] == '0'
 
 PORT = SERVERS_INFO[f'PORT{argv[1]}']

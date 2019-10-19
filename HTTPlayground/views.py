@@ -1,6 +1,7 @@
 from cgi import FieldStorage
-from HTTPlayground.base import CookieHandler, send_headers, require_http_methods
-from HTTPlayground.settings import ACCESSORY_URL_PREFIX, TEMPLATE_ENV
+from HTTPlayground.base import CookieHandler, send_headers, require_http_methods, TokensDB
+from HTTPlayground.settings import ACCESSORY_URL_PREFIX, TEMPLATE_ENV, SALT
+
 
 
 def not_found(request):
@@ -32,14 +33,16 @@ def logout(request):
 @require_http_methods(['GET'], not_found)
 def get_form(request):
     send_headers(request, content_type='text/html')
-    form_text = {'title': 'form',
-                 'form_link': f'{ACCESSORY_URL_PREFIX}/charge',
-                 'auth_link': f'{ACCESSORY_URL_PREFIX}/authh/login',
-                 'deauth_link': f'{ACCESSORY_URL_PREFIX}/authh/logout',
-                 'auth_text': 'Login',
-                 'deauth_text': 'Logout'}
+    secret_token = hash(f'{hash(CookieHandler.generate_cookie(request, name="auth", value="True"))}{hash(SALT)}')
+    TokensDB.add_token(secret_token)
+    form_text = {'title': ('form', 'form'),
+                 'form_link': (f'{ACCESSORY_URL_PREFIX}/charge', f'{ACCESSORY_URL_PREFIX}/charge'),
+                 'auth_link': (f'{ACCESSORY_URL_PREFIX}/authh/login', f'{ACCESSORY_URL_PREFIX}/authh/logout'),
+                 'auth_text': ('Login', 'Logout'),
+                 'secret_token': (secret_token, secret_token)}
+    is_authenticated = CookieHandler.has_cookie(request, name='auth', value='True')
     file = TEMPLATE_ENV.get_template('form.html')
-    rendered_html = file.render(**form_text)
+    rendered_html = file.render(**{k: v[is_authenticated] for k, v in form_text.items()})
     return rendered_html
 
 
@@ -54,6 +57,10 @@ def process_form(request):
         headers=request.headers,
         environ={'REQUEST_METHOD': 'POST'}
     )
-    rendered_html = file.render(title='Charged', link=f'{ACCESSORY_URL_PREFIX}/form',
-                                text=f'OK. {form.getvalue("sum_value")}$ charged!')
+    form_text = '{msg}. {sum_msg} charged!'
+    if not TokensDB.is_token_valid(form.getvalue('secret_token')):
+        form_text = form_text.format(msg='OK', sum_msg=form.getvalue("sum_value"))
+    else:
+        form_text = form_text.format(msg='ERROR', sum_msg='Nothing')
+    rendered_html = file.render(title='Charged', link=f'{ACCESSORY_URL_PREFIX}/form', text=form_text)
     return rendered_html

@@ -57,3 +57,19 @@ class CookieHandler:
         cookie[name]['path'] = '/'
         cookie[name]['httponly'] = True
         return cookie.output(header='', sep='')
+
+
+class TokensDB:
+    token_base = set()
+
+    @classmethod
+    def is_token_valid(cls, token):
+        return token in cls.token_base
+
+    @classmethod
+    def add_token(cls, token):
+        cls.token_base.add(token)
+
+    @classmethod
+    def remove_token(cls, token):
+        cls.token_base.remove(token)

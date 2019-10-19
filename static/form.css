@@ -14,7 +14,7 @@ input {
     align-content: center;
     background-color: #adf0ff;
 }
-.title, .submit-button, .auth-link, .deauth-link, .sum-input {
+ .title, .submit-button, .auth-link, .deauth-link, .sum-input {
     margin: 10px 0 10px 0;
     font-size: 1.2rem;
     border-radius: 6px;
