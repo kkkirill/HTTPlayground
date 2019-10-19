@@ -3,6 +3,7 @@ from HTTPlayground.base import CookieHandler, send_headers, require_http_methods
 from HTTPlayground.settings import ACCESSORY_URL_PREFIX, TEMPLATE_ENV, SALT
 
 
+
 def not_found(request):
     send_headers(request, response_code=404, content_type='text/html')
     file = TEMPLATE_ENV.get_template('base_response_form.html')
